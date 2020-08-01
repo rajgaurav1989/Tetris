@@ -4,15 +4,12 @@ import com.raju.constants.ProjectConstants;
 import com.raju.constants.StyleConstants;
 import com.raju.controller.TetrisController;
 import com.raju.service.ShapeService;
-import com.raju.shape.TetrisShape;
+import com.raju.models.TetrisShape;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.*;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 public class App extends Application {

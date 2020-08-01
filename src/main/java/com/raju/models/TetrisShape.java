@@ -1,4 +1,4 @@
-package com.raju.shape;
+package com.raju.models;
 
 import javafx.scene.Node;
 

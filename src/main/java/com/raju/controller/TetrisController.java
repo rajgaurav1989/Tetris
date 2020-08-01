@@ -1,8 +1,7 @@
 package com.raju.controller;
 
 import com.raju.constants.ProjectConstants;
-import com.raju.shape.TetrisShape;
-import javafx.animation.RotateTransition;
+import com.raju.models.TetrisShape;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;

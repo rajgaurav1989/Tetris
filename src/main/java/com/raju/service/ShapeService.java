@@ -2,7 +2,7 @@ package com.raju.service;
 
 import com.raju.constants.ProjectConstants;
 import com.raju.constants.StyleConstants;
-import com.raju.shape.TetrisShape;
+import com.raju.models.TetrisShape;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
