@@ -1,16 +1,17 @@
 package com.raju.models;
 
+import javafx.scene.Group;
 import javafx.scene.Node;
 
 public class TetrisShape {
-    private Node node;
+    private Group node;
     private short width;
     private short height;
     private float midX;
     private float midY;
     private boolean[][] shapeInfo ;
 
-    public TetrisShape(Node node,boolean[][] shapeInfo, short width, short height, float midX, float midY) {
+    public TetrisShape(Group node,boolean[][] shapeInfo, short width, short height, float midX, float midY) {
         this.node = node;
         this.width = width;
         this.height = height;
@@ -19,11 +20,11 @@ public class TetrisShape {
         this.shapeInfo = shapeInfo;
     }
 
-    public Node getNode() {
+    public Group getNode() {
         return node;
     }
 
-    public void setNode(Node node) {
+    public void setNode(Group node) {
         this.node = node;
     }
 

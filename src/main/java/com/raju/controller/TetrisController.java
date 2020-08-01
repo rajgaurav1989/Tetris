@@ -4,6 +4,7 @@ import com.raju.constants.ProjectConstants;
 import com.raju.models.TetrisShape;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Rotate;
@@ -38,16 +39,16 @@ public class TetrisController {
                     rotate(shape, -ProjectConstants.ROTATION_ANGLE);
                     break;
                 case LEFT:
-                    translateHorizontal(node, true);
+                    translateHorizontal(shape, true);
                     break;
                 case RIGHT:
-                    translateHorizontal(node, false);
+                    translateHorizontal(shape, false);
                     break;
                 case DOWN:
-                    translateFall(node, ProjectConstants.VERTICAL_FALL);
+                    translateFall(shape, ProjectConstants.VERTICAL_FALL);
                     break;
                 case UP:
-                    translateFall(node, -ProjectConstants.VERTICAL_FALL);
+                    translateFall(shape, -ProjectConstants.VERTICAL_FALL);
                     break;
             }
         } catch (Exception e) {
@@ -56,7 +57,7 @@ public class TetrisController {
     }
 
     private void rotate(TetrisShape shape, int angle) throws Exception {
-        Node node = shape.getNode();
+        Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         if (bounds.getMaxY() == ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
             return;
@@ -76,8 +77,8 @@ public class TetrisController {
         shape.setHeight(temp);
 
         bounds = node.localToScene(node.getBoundsInLocal());
-        if (bounds.getMinX() < ProjectConstants.CELL_SIZE || bounds.getMaxX() > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE ||
-                bounds.getMaxY() > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
+        if (copyTransform != null && (bounds.getMinX() < ProjectConstants.CELL_SIZE || bounds.getMaxX() > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE ||
+                bounds.getMaxY() > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT)) {
             node.getTransforms().clear();
             node.getTransforms().add(copyTransform);
         }
@@ -87,7 +88,8 @@ public class TetrisController {
         }
     }
 
-    private void translateHorizontal(Node node, boolean isLeft) throws Exception {
+    private void translateHorizontal(TetrisShape shape, boolean isLeft) throws Exception {
+        Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         int displacement = (isLeft) ? -ProjectConstants.HORIZONTAL_DISPLACEMENT : ProjectConstants.HORIZONTAL_DISPLACEMENT;
         if ((isLeft && bounds.getMinX() + displacement >= ProjectConstants.CELL_SIZE) ||
@@ -100,7 +102,8 @@ public class TetrisController {
         }
     }
 
-    public boolean translateFall(Node node, float displacement) throws Exception {
+    public boolean translateFall(TetrisShape shape, float displacement) throws Exception {
+        Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         if (bounds.getMaxY() + displacement <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
             node.translateYProperty().set(node.getTranslateY() + displacement);
@@ -111,6 +114,13 @@ public class TetrisController {
             return true;
         }
         return false;
+    }
+
+    private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, int displacement) {
+        Node node = tetrisShape.getNode();
+
+
+        return true;
     }
 
 }

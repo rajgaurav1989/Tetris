@@ -27,4 +27,7 @@ public class ProjectConstants {
     public static final float MIN_TOP_Y_COORD = CELL_SIZE;
     public static final float MAX_BOTTOM_Y_COORD = WINDOW_HEIGHT + MIN_TOP_Y_COORD;
 
+    public static final int HASH = 5;
+    public static final int HASH_MULTIPLIER = 89;
+
 }

@@ -67,9 +67,9 @@ public class App extends Application {
 
                     if (node.getTranslateY() <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
                         try {
-                            boolean isMoved = TetrisController.getInstance().translateFall(node, ProjectConstants.DEFAULT_FALL);
+                            boolean isMoved = TetrisController.getInstance().translateFall(tetrisShape, ProjectConstants.DEFAULT_FALL);
                             isTouched = !isMoved;
-                            if (isMoved){
+                            if (isTouched){
                                 previousShape = tetrisShape;
                                 previousEventHandler = eventHandler;
                                 node.setFocusTraversable(false);
