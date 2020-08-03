@@ -2,6 +2,7 @@ package com.raju.controller;
 
 import com.raju.constants.ProjectConstants;
 import com.raju.models.TetrisShape;
+import com.raju.service.ShapeService;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Group;
@@ -72,15 +73,18 @@ public class TetrisController {
         node.getTransforms().clear();
         node.getTransforms().add(currentTransform);
 
-        short temp = shape.getWidth();
-        shape.setWidth(shape.getHeight());
-        shape.setHeight(temp);
-
         bounds = node.localToScene(node.getBoundsInLocal());
         if (copyTransform != null && (bounds.getMinX() < ProjectConstants.CELL_SIZE || bounds.getMaxX() > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE ||
                 bounds.getMaxY() > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT)) {
             node.getTransforms().clear();
             node.getTransforms().add(copyTransform);
+        }
+        else {
+            short temp = shape.getWidth();
+            shape.setWidth(shape.getHeight());
+            shape.setHeight(temp);
+            int numStep = angle < 0 ? 3 : 1;
+            shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(),numStep));
         }
 
         if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {

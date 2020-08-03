@@ -119,13 +119,17 @@ public class ShapeService {
                 PhongMaterial material = new PhongMaterial(Color.ORANGE);
                 box.setMaterial(material);
 
-                boxes.add(box);
-                boxes.add(getRectangle(Arrays.asList(
+                Group rootBox = new Group();
+
+                rootBox.getChildren().add(box);
+                rootBox.getChildren().add(getRectangle(Arrays.asList(
                         new Point3D(currentX + LINE_WIDTH - ProjectConstants.CELL_SIZE / 2, currentY + LINE_WIDTH - ProjectConstants.CELL_SIZE / 2, 0),
                         new Point3D(currentX - LINE_WIDTH + ProjectConstants.CELL_SIZE / 2, currentY + LINE_WIDTH - ProjectConstants.CELL_SIZE / 2, 0),
                         new Point3D(currentX - LINE_WIDTH + ProjectConstants.CELL_SIZE / 2, currentY - LINE_WIDTH + ProjectConstants.CELL_SIZE / 2, 0),
                         new Point3D(currentX + LINE_WIDTH - ProjectConstants.CELL_SIZE / 2, currentY - LINE_WIDTH + ProjectConstants.CELL_SIZE / 2, 0)
                 )));
+
+                boxes.add(rootBox);
             }
         }
         return boxes;
