@@ -114,7 +114,7 @@ public class App extends Application {
                 if (!shapeInfo[row][col]) {
                     continue;
                 }
-                Node block = blocks.remove(0);
+                Node block = blocks.remove(blocks.size()-1);
                 Bounds b1 = block.localToScene(block.getBoundsInLocal());
                 double xCoord = startX + col * ProjectConstants.CELL_SIZE;
                 double yCoord = startY + row * ProjectConstants.CELL_SIZE;
