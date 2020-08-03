@@ -30,6 +30,9 @@ public class TetrisController {
     }
 
     private void handleKeyPress(KeyEvent event, TetrisShape shape) {
+        if (shape.isTouched()) {
+            return;
+        }
         try {
             Node node = shape.getNode();
             switch (event.getCode()) {
@@ -77,18 +80,21 @@ public class TetrisController {
         if (copyTransform != null && (bounds.getMinX() < ProjectConstants.CELL_SIZE || bounds.getMaxX() > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE ||
                 bounds.getMaxY() > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT)) {
             node.getTransforms().clear();
-            node.getTransforms().add(copyTransform);
-        }
-        else {
+            if (copyTransform != null) {
+                node.getTransforms().add(copyTransform);
+            } else {
+                node.getTransforms().clear();
+            }
+        } else {
             short temp = shape.getWidth();
             shape.setWidth(shape.getHeight());
             shape.setHeight(temp);
             int numStep = angle < 0 ? 3 : 1;
-            shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(),numStep));
+            shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(), numStep));
         }
 
         if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
-            throw new Exception("Serious design error in tetris");
+            System.exit(1);
         }
     }
 
@@ -101,23 +107,24 @@ public class TetrisController {
             node.translateXProperty().set(node.getTranslateX() + displacement);
             bounds = node.localToScene(node.getBoundsInLocal());
             if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
-                throw new Exception("Serious design error in tetris");
+                System.exit(1);
             }
         }
     }
 
-    public boolean translateFall(TetrisShape shape, float displacement) throws Exception {
+    public void translateFall(TetrisShape shape, float displacement) throws Exception {
         Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         if (bounds.getMaxY() + displacement <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
             node.translateYProperty().set(node.getTranslateY() + displacement);
             bounds = node.localToScene(node.getBoundsInLocal());
             if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
-                throw new Exception("Serious design error in tetris");
+                System.exit(1);
             }
-            return true;
+            return;
         }
-        return false;
+        shape.setTouched(true);
+        return;
     }
 
     private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, int displacement) {

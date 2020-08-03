@@ -75,8 +75,8 @@ public class App extends Application {
 
                     if (node.getTranslateY() <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
                         try {
-                            boolean isMoved = TetrisController.getInstance().translateFall(tetrisShape, ProjectConstants.DEFAULT_FALL);
-                            isTouched = !isMoved;
+                            TetrisController.getInstance().translateFall(tetrisShape, ProjectConstants.DEFAULT_FALL);
+                            isTouched = tetrisShape.isTouched();
                             if (isTouched) {
                                 previousShape = tetrisShape;
                                 previousEventHandler = eventHandler;
@@ -114,7 +114,7 @@ public class App extends Application {
                 if (!shapeInfo[row][col]) {
                     continue;
                 }
-                Node block = blocks.remove(blocks.size()-1);
+                Node block = blocks.remove(blocks.size() - 1);
                 Bounds b1 = block.localToScene(block.getBoundsInLocal());
                 double xCoord = startX + col * ProjectConstants.CELL_SIZE;
                 double yCoord = startY + row * ProjectConstants.CELL_SIZE;

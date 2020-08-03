@@ -9,9 +9,10 @@ public class TetrisShape {
     private short height;
     private float midX;
     private float midY;
-    private boolean[][] shapeInfo ;
+    private boolean[][] shapeInfo;
+    private boolean isTouched = false;
 
-    public TetrisShape(Group node,boolean[][] shapeInfo, short width, short height, float midX, float midY) {
+    public TetrisShape(Group node, boolean[][] shapeInfo, short width, short height, float midX, float midY) {
         this.node = node;
         this.width = width;
         this.height = height;
@@ -68,4 +69,11 @@ public class TetrisShape {
         this.shapeInfo = shapeInfo;
     }
 
+    public boolean isTouched() {
+        return isTouched;
+    }
+
+    public void setTouched(boolean touched) {
+        isTouched = touched;
+    }
 }
