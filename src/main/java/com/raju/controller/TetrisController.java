@@ -1,6 +1,8 @@
 package com.raju.controller;
 
 import com.raju.constants.ProjectConstants;
+import com.raju.models.Block;
+import com.raju.models.Location;
 import com.raju.models.TetrisShape;
 import com.raju.service.ShapeService;
 import javafx.event.EventHandler;
@@ -10,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+
+import java.util.Map;
 
 public class TetrisController {
     private static TetrisController tetrisController;
@@ -128,8 +132,25 @@ public class TetrisController {
     }
 
     private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, int displacement) {
-        Node node = tetrisShape.getNode();
+        Group node = tetrisShape.getNode();
+        Bounds bounds = node.localToScene(node.getBoundsInLocal());
+        if (bounds.getMaxY() + displacement > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT){
+            return false;
+        }
 
+        Map<Location, Block> blockMap = ShapeService.getInstance().getBlockMap();
+        double startX = bounds.getMinX();
+        double startY = bounds.getMinY();
+
+        boolean[][] shapeInfo = tetrisShape.getShapeInfo();
+        int numRows = shapeInfo.length;
+        int numCols = shapeInfo[0].length;
+
+        for (int row = 0 ; row < numRows; row++){
+            for (int col = 0 ; col < numCols ; col++){
+                
+            }
+        }
 
         return true;
     }

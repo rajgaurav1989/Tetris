@@ -2,6 +2,8 @@ package com.raju.service;
 
 import com.raju.constants.ProjectConstants;
 import com.raju.constants.StyleConstants;
+import com.raju.models.Block;
+import com.raju.models.Location;
 import com.raju.models.TetrisShape;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -17,8 +19,9 @@ public class ShapeService {
     private final int LINE_WIDTH = 2;
     private static ShapeService shapeService;
     private Map<Integer, boolean[][]> shapeMap;
+    private Map<Location, Block> blockMap ;
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
     private static final boolean[][] T_SHAPE_DESCRIPTION = new boolean[][]{{false, true, false}, {true, true, true}};
     private static final boolean[][] LEFT_L_DESCRIPTION = new boolean[][]{{true, false}, {true, false}, {true, true}};
     private static final boolean[][] RIGHT_L_DESCRIPTION = new boolean[][]{{false, true}, {false, true}, {true, true}};
@@ -36,6 +39,13 @@ public class ShapeService {
         shapeMap = new HashMap<>();
         for (int shapeIndex = 0; shapeIndex < shapeList.size(); shapeIndex++) {
             shapeMap.put(shapeIndex, shapeList.get(shapeIndex));
+        }
+        blockMap = new HashMap<>();
+        for (short row = 0 ; row < ProjectConstants.NUM_VERTICAL_BLOCK ; row++){
+            for (short col = 0 ; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS ; col++){
+                Location location = new Location(row,col);
+                Block block = new Block(location,true);
+            }
         }
     }
 
@@ -174,4 +184,17 @@ public class ShapeService {
         line.setStrokeWidth(width);
         return line;
     }
+
+    public Block getBlock(Location location){
+        return blockMap.get(location);
+    }
+
+    public void updateBlockMap(Block block){
+        blockMap.put(block.getLocation(),block);
+    }
+
+    public Map<Location,Block> getBlockMap(){
+        return this.blockMap;
+    }
+
 }
