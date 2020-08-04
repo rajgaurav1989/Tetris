@@ -27,4 +27,12 @@ public class Block {
     public void setFree(boolean free) {
         isFree = free;
     }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+                "location=" + location +
+                ", isFree=" + isFree +
+                '}';
+    }
 }

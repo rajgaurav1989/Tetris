@@ -40,11 +40,13 @@ public class ShapeService {
         for (int shapeIndex = 0; shapeIndex < shapeList.size(); shapeIndex++) {
             shapeMap.put(shapeIndex, shapeList.get(shapeIndex));
         }
-        blockMap = new HashMap<>();
+        blockMap = new LinkedHashMap<>();
         for (short row = 0 ; row < ProjectConstants.NUM_VERTICAL_BLOCK ; row++){
             for (short col = 0 ; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS ; col++){
                 Location location = new Location(row,col);
                 Block block = new Block(location,true);
+                blockMap.put(location,block);
+                System.out.println("");
             }
         }
     }
@@ -186,10 +188,12 @@ public class ShapeService {
     }
 
     public Block getBlock(Location location){
+        Location location1 = new Location(location.getRowNum(),location.getColNum());
         return blockMap.get(location);
     }
 
     public void updateBlockMap(Block block){
+        System.out.println("line 195 "+(block.getLocation() == null));
         blockMap.put(block.getLocation(),block);
     }
 

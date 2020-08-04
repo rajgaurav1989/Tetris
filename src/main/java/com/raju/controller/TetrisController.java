@@ -13,10 +13,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class TetrisController {
     private static TetrisController tetrisController;
+    private boolean isOpRunning = false;
 
     private TetrisController() {
     }
@@ -34,7 +37,7 @@ public class TetrisController {
     }
 
     private void handleKeyPress(KeyEvent event, TetrisShape shape) {
-        if (shape.isTouched()) {
+        if (shape.isTouched() || isOpRunning) {
             return;
         }
         try {
@@ -65,9 +68,11 @@ public class TetrisController {
     }
 
     private void rotate(TetrisShape shape, int angle) throws Exception {
+        isOpRunning = true;
         Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         if (bounds.getMaxY() == ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
+            isOpRunning = false;
             return;
         }
 
@@ -81,8 +86,7 @@ public class TetrisController {
         node.getTransforms().add(currentTransform);
 
         bounds = node.localToScene(node.getBoundsInLocal());
-        if (copyTransform != null && (bounds.getMinX() < ProjectConstants.CELL_SIZE || bounds.getMaxX() > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE ||
-                bounds.getMaxY() > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT)) {
+        if (!isRotatePossible(shape)) {
             node.getTransforms().clear();
             if (copyTransform != null) {
                 node.getTransforms().add(copyTransform);
@@ -97,61 +101,122 @@ public class TetrisController {
             shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(), numStep));
         }
 
+        isOpRunning = false;
         if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
             System.exit(1);
         }
     }
 
+    private boolean isRotatePossible(TetrisShape shape){
+        if (isVerticalTranslateFeasible(shape,0) && isHorizontalTranslateFeasible(shape,true,0) &&
+            isHorizontalTranslateFeasible(shape,false,0)){
+            return true ;
+        }
+        return false;
+    }
+
     private void translateHorizontal(TetrisShape shape, boolean isLeft) throws Exception {
+        isOpRunning = true;
         Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
         int displacement = (isLeft) ? -ProjectConstants.HORIZONTAL_DISPLACEMENT : ProjectConstants.HORIZONTAL_DISPLACEMENT;
-        if ((isLeft && bounds.getMinX() + displacement >= ProjectConstants.CELL_SIZE) ||
-                (!isLeft && bounds.getMaxX() + displacement <= ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE)) {
+        if (isHorizontalTranslateFeasible(shape, isLeft,displacement)) {
             node.translateXProperty().set(node.getTranslateX() + displacement);
             bounds = node.localToScene(node.getBoundsInLocal());
             if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
                 System.exit(1);
             }
         }
+        isOpRunning = false;
     }
 
     public void translateFall(TetrisShape shape, float displacement) throws Exception {
+        isOpRunning = true;
         Group node = shape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
-        if (bounds.getMaxY() + displacement <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
+        if (isVerticalTranslateFeasible(shape, displacement)) {
             node.translateYProperty().set(node.getTranslateY() + displacement);
             bounds = node.localToScene(node.getBoundsInLocal());
             if (((bounds.getMaxX() - bounds.getMinX()) % ProjectConstants.CELL_SIZE != 0) || ((bounds.getMaxY() - bounds.getMinY()) % ProjectConstants.CELL_SIZE != 0)) {
                 System.exit(1);
             }
+            isOpRunning = false;
             return;
         }
         shape.setTouched(true);
-        return;
+        isOpRunning = false;
     }
 
-    private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, int displacement) {
+    private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, float displacement) {
         Group node = tetrisShape.getNode();
         Bounds bounds = node.localToScene(node.getBoundsInLocal());
-        if (bounds.getMaxY() + displacement > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT){
+        if (bounds.getMaxY() + displacement > ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
             return false;
         }
 
-        Map<Location, Block> blockMap = ShapeService.getInstance().getBlockMap();
+//        Map<Location, Block> blockMap = ShapeService.getInstance().getBlockMap();
+//        System.out.println("----------------");
+//
+//        blockMap.forEach((k,v) -> {
+//            System.out.println(k+"\t"+v);
+//        });
+//
+//        System.out.println("----------------");
+
         double startX = bounds.getMinX();
-        double startY = bounds.getMinY();
 
         boolean[][] shapeInfo = tetrisShape.getShapeInfo();
-        int numRows = shapeInfo.length;
         int numCols = shapeInfo[0].length;
 
-        for (int row = 0 ; row < numRows; row++){
-            for (int col = 0 ; col < numCols ; col++){
-                
+        double possibleYcoord = bounds.getMaxY() - ProjectConstants.CELL_SIZE + displacement;
+        int rowNum = (int) (possibleYcoord / ProjectConstants.CELL_SIZE) -  1;
+
+        List<Block> blockList = new ArrayList<>();
+        for (int col = 0; col < numCols; col++) {
+            double xCoord = startX + col * ProjectConstants.CELL_SIZE;
+            int colNum = (int) (xCoord / ProjectConstants.CELL_SIZE) - 1;
+            Block block = ShapeService.getInstance().getBlock(new Location((short) rowNum,(short) colNum));
+            if (block == null){
+                System.out.println("row "+rowNum+" col "+colNum+" disp = "+displacement+" y = "+possibleYcoord);
             }
+            if (!block.isFree()) {
+                return false;
+            }
+            blockList.add(block);
         }
 
+        blockList.forEach(block -> block.setFree(false));
+
+        return true;
+    }
+
+    private boolean isHorizontalTranslateFeasible(TetrisShape shape, boolean isLeft,int displacement) {
+        Group node = shape.getNode();
+        Bounds bounds = node.localToScene(node.getBoundsInLocal());
+
+        if ((isLeft && bounds.getMinX() + displacement < ProjectConstants.CELL_SIZE) ||
+                (!isLeft && bounds.getMaxX() + displacement > ProjectConstants.WINDOW_WIDTH + ProjectConstants.CELL_SIZE)) {
+            return false;
+        }
+
+        double startY = bounds.getMinY();
+        double possibleXcoord = isLeft ? bounds.getMinX() + displacement : bounds.getMaxX() - ProjectConstants.CELL_SIZE + displacement;
+        int colNum = (int) (possibleXcoord / ProjectConstants.CELL_SIZE) - 1;
+
+        boolean[][] shapeInfo = shape.getShapeInfo();
+        short numRows = (short) shapeInfo.length;
+        List<Block> blockList = new ArrayList<>();
+
+        for (short row = 0; row < numRows; row++) {
+            double yCoord = startY + row * ProjectConstants.CELL_SIZE;
+            int rowNum = (int) (yCoord / ProjectConstants.CELL_SIZE) - 1;
+            Block block = ShapeService.getInstance().getBlock(new Location((short) rowNum,(short) colNum));
+            if (!block.isFree()) {
+                return false;
+            }
+            blockList.add(block);
+        }
+        blockList.forEach(block -> block.setFree(false));
         return true;
     }
 

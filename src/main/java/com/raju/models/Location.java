@@ -34,4 +34,21 @@ public class Location {
         hashCode = ProjectConstants.HASH_MULTIPLIER * hashCode + this.colNum;
         return hashCode;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location = (Location) o;
+        return rowNum == location.rowNum &&
+                colNum == location.colNum;
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "rowNum=" + rowNum +
+                ", colNum=" + colNum +
+                '}';
+    }
 }
