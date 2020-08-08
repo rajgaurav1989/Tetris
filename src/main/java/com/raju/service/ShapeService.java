@@ -193,7 +193,6 @@ public class ShapeService {
     }
 
     public void updateBlockMap(Block block){
-        System.out.println("line 195 "+(block.getLocation() == null));
         blockMap.put(block.getLocation(),block);
     }
 
