@@ -16,6 +16,7 @@ import javafx.scene.transform.Transform;
 public class TetrisController {
     private static TetrisController tetrisController;
     private boolean isOpRunning = false;
+    private static int topRowIndex = 0;
 
     private TetrisController() {
     }
@@ -80,7 +81,7 @@ public class TetrisController {
 
         bounds = node.localToScene(node.getBoundsInLocal());
 
-        if (!isRotatePossible(shape,angle)) {
+        if (!isRotatePossible(shape, angle)) {
             node.getTransforms().clear();
             if (copyTransform != null) {
                 node.getTransforms().add(copyTransform);
@@ -95,19 +96,19 @@ public class TetrisController {
         }
     }
 
-    private boolean isRotatePossible(TetrisShape shape,short angle) {
+    private boolean isRotatePossible(TetrisShape shape, short angle) {
         boolean[][] oldShapeInfo = shape.getShapeInfo();
         int numStep = angle < 0 ? 3 : 1;
         shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(), numStep));
 
-        if (isVerticalTranslateFeasible(shape, 0) && isHorizontalTranslateFeasible(shape, true, 0)){
+        if (isVerticalTranslateFeasible(shape, 0) && isHorizontalTranslateFeasible(shape, true, 0)) {
             short temp = shape.getWidth();
             shape.setWidth(shape.getHeight());
             shape.setHeight(temp);
             return true;
         }
         shape.setShapeInfo(oldShapeInfo);
-        return false ;
+        return false;
     }
 
     private void translateHorizontal(TetrisShape shape, boolean isLeft) throws Exception {
@@ -150,6 +151,9 @@ public class TetrisController {
         int numCols = shapeInfo[0].length;
         double startX = bounds.getMinX();
         double startY = bounds.getMinY();
+
+        topRowIndex = (int) (startY / ProjectConstants.CELL_SIZE) - 1;
+
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 if (!shapeInfo[row][col]) {
@@ -163,10 +167,28 @@ public class TetrisController {
 
                 Block block = ShapeService.getInstance().getBlock(new Location((short) rowNum, (short) colNum));
                 block.setFree(false);
-                ShapeService.getInstance().updateBlockMap(block);
-
             }
         }
+    }
+
+    private void mergeLine() {
+        for (int index = topRowIndex; index > ProjectConstants.NUM_VERTICAL_BLOCK; index++) {
+            if (!isRowFull(index)){
+                continue;
+            }
+            topRowIndex++;
+
+        }
+    }
+
+    private boolean isRowFull(int rowIndex) {
+        for (int col = 0; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS; col++) {
+            Block block = ShapeService.getInstance().getBlock(new Location((short) rowIndex, (short) col));
+            if (block.isFree()){
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, float displacement) {

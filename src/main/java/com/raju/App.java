@@ -3,6 +3,8 @@ package com.raju;
 import com.raju.constants.ProjectConstants;
 import com.raju.constants.StyleConstants;
 import com.raju.controller.TetrisController;
+import com.raju.models.Block;
+import com.raju.models.Location;
 import com.raju.service.ShapeService;
 import com.raju.models.TetrisShape;
 import javafx.animation.AnimationTimer;
@@ -121,6 +123,13 @@ public class App extends Application {
                 double yCoord = startY + row * ProjectConstants.CELL_SIZE;
                 block.setTranslateX(xCoord - b1.getMinX());
                 block.setTranslateY(yCoord - b1.getMinY());
+
+                b1 = block.localToScene(block.getBoundsInLocal());
+                int rowIndex = (int) (b1.getMinY() / ProjectConstants.CELL_SIZE) - 1;
+                int colIndex = (int) (b1.getMinX() / ProjectConstants.CELL_SIZE) - 1;
+                Block basicBlock = ShapeService.getInstance().getBlock(new Location((short)rowIndex,(short)colIndex));
+                basicBlock.setNode(block);
+
                 independentBlocks.add(block);
             }
         }

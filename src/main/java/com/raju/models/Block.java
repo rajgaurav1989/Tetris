@@ -1,8 +1,11 @@
 package com.raju.models;
 
+import javafx.scene.Node;
+
 public class Block {
     private Location location;
     private boolean isFree = true;
+    private Node node;
 
     public Block(){
     }
@@ -26,6 +29,14 @@ public class Block {
 
     public void setFree(boolean free) {
         isFree = free;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
     }
 
     @Override
