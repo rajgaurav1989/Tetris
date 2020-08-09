@@ -17,7 +17,7 @@ public class ProjectConstants {
     public static final float WINDOW_HEIGHT = NUM_VERTICAL_BLOCK * CELL_SIZE;
     public static final float WINDOW_WIDTH = NUM_HORIZONTAL_BLOCKS * CELL_SIZE;
 
-    public static final int ROTATION_ANGLE = 90;
+    public static final short ROTATION_ANGLE = 90;
     public static final int HORIZONTAL_DISPLACEMENT = CELL_SIZE;
     public static final int VERTICAL_FALL = CELL_SIZE;
     public static final int DEFAULT_FALL = CELL_SIZE;
