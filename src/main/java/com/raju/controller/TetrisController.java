@@ -16,7 +16,7 @@ import javafx.scene.transform.Transform;
 public class TetrisController {
     private static TetrisController tetrisController;
     private boolean isOpRunning = false;
-    private static int topRowIndex = 0;
+    private static int topRowIndex = ProjectConstants.NUM_VERTICAL_BLOCK - 1;
 
     private TetrisController() {
     }
@@ -152,7 +152,10 @@ public class TetrisController {
         double startX = bounds.getMinX();
         double startY = bounds.getMinY();
 
-        topRowIndex = (int) (startY / ProjectConstants.CELL_SIZE) - 1;
+        int topIndexOfBlock = (int) (startY / ProjectConstants.CELL_SIZE) - 1;
+        if (topRowIndex > topIndexOfBlock) {
+            topRowIndex = topIndexOfBlock;
+        }
 
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
@@ -171,24 +174,68 @@ public class TetrisController {
         }
     }
 
-    private void mergeLine() {
-        for (int index = topRowIndex; index > ProjectConstants.NUM_VERTICAL_BLOCK; index++) {
-            if (!isRowFull(index)){
+    public void mergeLine() {
+        for (int index = topRowIndex; index < ProjectConstants.NUM_VERTICAL_BLOCK; index++) {
+            if (!isRowFull(index)) {
                 continue;
             }
+            freeRow(index);
+            try {
+                Thread.sleep(ProjectConstants.LINE_SLEEP_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            translateBlocksAboveLine(topRowIndex, index - 1);
             topRowIndex++;
+            return ;
+        }
+    }
 
+    private void translateBlocksAboveLine(int topIndex, int bottomIndex) {
+        if (topIndex > bottomIndex || bottomIndex == ProjectConstants.NUM_VERTICAL_BLOCK - 1) {
+            return;
+        }
+        ShapeService shapeService = ShapeService.getInstance();
+        for (int index = bottomIndex; index >= topIndex; index--) {
+            int targetIndex = index + 1;
+            for (int col = 0; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS; col++) {
+                Location oldLocation = new Location((short) index, (short) col);
+                Block block = shapeService.getBlock(oldLocation);
+                Node blockNode = block.getNode();
+                if (blockNode == null) {
+                    continue;
+                }
+
+                blockNode.translateYProperty().set(blockNode.getTranslateY() + ProjectConstants.CELL_SIZE);
+                block.getLocation().setRowNum((short) targetIndex);
+                block.setFree(false);
+
+                Block freeBlock = new Block(new Location((short) index, (short) col), true);
+                shapeService.updateBlockMap(freeBlock);
+
+                shapeService.updateBlockMap(block);
+            }
         }
     }
 
     private boolean isRowFull(int rowIndex) {
         for (int col = 0; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS; col++) {
             Block block = ShapeService.getInstance().getBlock(new Location((short) rowIndex, (short) col));
-            if (block.isFree()){
+            if (block.isFree()) {
                 return false;
             }
         }
         return true;
+    }
+
+    private void freeRow(int rowIndex) {
+        for (int col = 0; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS; col++) {
+            Block block = ShapeService.getInstance().getBlock(new Location((short) rowIndex, (short) col));
+            block.setFree(true);
+            Node blockNode = block.getNode();
+            block.setNode(null);
+            blockNode.setVisible(false);
+        }
     }
 
     private boolean isVerticalTranslateFeasible(TetrisShape tetrisShape, float displacement) {

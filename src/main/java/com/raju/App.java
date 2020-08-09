@@ -79,14 +79,15 @@ public class App extends Application {
                     if (node.getTranslateY() <= ProjectConstants.WINDOW_HEIGHT + ProjectConstants.BUFFER_HEIGHT) {
                         try {
                             TetrisController.getInstance().translateFall(tetrisShape, ProjectConstants.DEFAULT_FALL);
-                            isTouched = tetrisShape.isTouched();
-                            if (isTouched) {
+                            if (tetrisShape.isTouched()) {
                                 previousShape = tetrisShape;
                                 previousEventHandler = eventHandler;
                                 node.setFocusTraversable(false);
                                 int numChildren = tetrisGroup.getChildren().size();
                                 tetrisGroup.getChildren().remove(numChildren - 2, numChildren - 1);
                                 updateChildBlocks(tetrisGroup, previousShape);
+                                TetrisController.getInstance().mergeLine();
+                                isTouched = true;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
