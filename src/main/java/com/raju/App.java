@@ -37,6 +37,7 @@ public class App extends Application {
 
         primaryStage.setTitle(ProjectConstants.PROJECT_TITLE);
         primaryStage.setScene(tetrisScene);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
         AnimationTimer animationTimer = new AnimationTimer() {
