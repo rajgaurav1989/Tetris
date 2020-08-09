@@ -87,10 +87,6 @@ public class TetrisController {
             } else {
                 node.getTransforms().clear();
             }
-        } else {
-            short temp = shape.getWidth();
-            shape.setWidth(shape.getHeight());
-            shape.setHeight(temp);
         }
 
         isOpRunning = false;
@@ -105,6 +101,9 @@ public class TetrisController {
         shape.setShapeInfo(ShapeService.getInstance().getShape(shape.getShapeInfo(), numStep));
 
         if (isVerticalTranslateFeasible(shape, 0) && isHorizontalTranslateFeasible(shape, true, 0)){
+            short temp = shape.getWidth();
+            shape.setWidth(shape.getHeight());
+            shape.setHeight(temp);
             return true;
         }
         shape.setShapeInfo(oldShapeInfo);
