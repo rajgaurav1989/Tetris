@@ -50,13 +50,13 @@ public class App extends Application {
             TetrisShape previousShape = null;
             boolean isTouched = true;
 
-            EventHandler eventHandler, previousEventHandler;
+            EventHandler eventHandler;
 
             @Override
             public void handle(long now) {
                 if (now - lastUpdateTime >= ProjectConstants.FRAME_RENDER_TIME) {
                     lastUpdateTime = now;
-                    if (isTouched) {
+                    if (isTouched && !TetrisController.isMergeLineRunning) {
                         isTouched = false;
                         if (previousShape != null) {
                             tetrisShape = ShapeService.getInstance().getShape();
@@ -67,10 +67,7 @@ public class App extends Application {
                         node.setTranslateY(ProjectConstants.BUFFER_HEIGHT);
                         node.setFocusTraversable(true);
 
-                        if (previousShape != null) {
-                            primaryStage.removeEventHandler(KeyEvent.KEY_PRESSED, previousEventHandler);
-                        }
-                        tetrisGroup.getChildren().addAll(node, ShapeService.getInstance().getTetrisBoundary());
+                        tetrisGroup.getChildren().addAll(node, ShapeService.getInstance().getTetrisBoundary(),ShapeService.getInstance().getGridLines());
 
                         eventHandler = TetrisController.getInstance().getKeyPressEventHandler(tetrisShape);
                         primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
@@ -80,12 +77,15 @@ public class App extends Application {
                         try {
                             TetrisController.getInstance().translateFall(tetrisShape, ProjectConstants.DEFAULT_FALL);
                             if (tetrisShape.isTouched()) {
+                                Bounds bounds = node.localToScene(node.getBoundsInLocal());
+                                if (bounds.getMinY() <= ProjectConstants.CELL_SIZE){
+                                    System.out.println("\n\nGame Over\n\n");
+                                    System.exit(0);
+                                }
                                 previousShape = tetrisShape;
-                                previousEventHandler = eventHandler;
                                 node.setFocusTraversable(false);
-                                int numChildren = tetrisGroup.getChildren().size();
-                                tetrisGroup.getChildren().remove(numChildren - 2, numChildren - 1);
                                 updateChildBlocks(tetrisGroup, previousShape);
+                                TetrisController.isMergeLineRunning = true;
                                 TetrisController.getInstance().mergeLine();
                                 isTouched = true;
                             }
@@ -115,7 +115,7 @@ public class App extends Application {
 
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
-                if (!shapeInfo[row][col]) {
+                if (!shapeInfo[row][col] || blocks.size() <= 0) {
                     continue;
                 }
                 Node block = blocks.remove(blocks.size() - 1);

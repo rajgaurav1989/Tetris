@@ -19,7 +19,7 @@ public class ShapeService {
     private final int LINE_WIDTH = 2;
     private static ShapeService shapeService;
     private Map<Integer, boolean[][]> shapeMap;
-    private Map<Location, Block> blockMap ;
+    private Map<Location, Block> blockMap;
 
     private final Random rand = new Random();
     private static final boolean[][] T_SHAPE_DESCRIPTION = new boolean[][]{{false, true, false}, {true, true, true}};
@@ -41,12 +41,11 @@ public class ShapeService {
             shapeMap.put(shapeIndex, shapeList.get(shapeIndex));
         }
         blockMap = new LinkedHashMap<>();
-        for (short row = 0 ; row < ProjectConstants.NUM_VERTICAL_BLOCK ; row++){
-            for (short col = 0 ; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS ; col++){
-                Location location = new Location(row,col);
-                Block block = new Block(location,true);
-                blockMap.put(location,block);
-                System.out.println("");
+        for (short row = 0; row < ProjectConstants.NUM_VERTICAL_BLOCK; row++) {
+            for (short col = 0; col < ProjectConstants.NUM_HORIZONTAL_BLOCKS; col++) {
+                Location location = new Location(row, col);
+                Block block = new Block(location, true);
+                blockMap.put(location, block);
             }
         }
     }
@@ -187,17 +186,43 @@ public class ShapeService {
         return line;
     }
 
-    public Block getBlock(Location location){
-        Location location1 = new Location(location.getRowNum(),location.getColNum());
+    public Block getBlock(Location location) {
+        Location location1 = new Location(location.getRowNum(), location.getColNum());
         return blockMap.get(location);
     }
 
-    public void updateBlockMap(Block block){
-        blockMap.put(block.getLocation(),block);
+    public void updateBlockMap(Block block) {
+        blockMap.put(block.getLocation(), block);
     }
 
-    public Map<Location,Block> getBlockMap(){
+    public Map<Location, Block> getBlockMap() {
         return this.blockMap;
+    }
+
+    private List<Line> getGridLinesHelper(int startIndex,int endIndex,int startPoint,int endPoint,boolean isVertical){
+        List<Line> lineList = new ArrayList<>();
+        for (int index = startIndex ; index <= endIndex ; index = index + ProjectConstants.CELL_SIZE) {
+            Line gridLine = isVertical ? new Line(index,startPoint,index,endPoint)
+                    : new Line(startPoint,index,endPoint,index);
+            gridLine.setStroke(isVertical ? StyleConstants.VERTICAL_LINE_COLOR : StyleConstants.HORIZONTAL_LINE_COLOR);
+            gridLine.setStrokeWidth(StyleConstants.GRID_LINE_THICKNESS);
+            lineList.add(gridLine);
+        }
+        return lineList;
+    }
+
+    public Group getGridLines() {
+        Group gridLines = new Group();
+        int startColIndex = 2 * ProjectConstants.CELL_SIZE;
+        int endColIndex = ProjectConstants.NUM_HORIZONTAL_BLOCKS * ProjectConstants.CELL_SIZE;
+        gridLines.getChildren().addAll(getGridLinesHelper(startColIndex,endColIndex,ProjectConstants.CELL_SIZE,
+                (int) ProjectConstants.WINDOW_HEIGHT+ (int) ProjectConstants.BUFFER_HEIGHT,true));
+
+        int startRowIndex = 2 * ProjectConstants.CELL_SIZE;
+        int endRowIndex = ProjectConstants.NUM_VERTICAL_BLOCK * ProjectConstants.CELL_SIZE;
+        gridLines.getChildren().addAll(getGridLinesHelper(startRowIndex,endRowIndex,ProjectConstants.CELL_SIZE,
+                (int) ProjectConstants.WINDOW_WIDTH + (int)ProjectConstants.CELL_SIZE,false));
+        return gridLines;
     }
 
 }

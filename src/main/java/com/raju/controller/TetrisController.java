@@ -17,6 +17,7 @@ public class TetrisController {
     private static TetrisController tetrisController;
     private boolean isOpRunning = false;
     private static int topRowIndex = ProjectConstants.NUM_VERTICAL_BLOCK - 1;
+    public static boolean isMergeLineRunning = false;
 
     private TetrisController() {
     }
@@ -68,7 +69,6 @@ public class TetrisController {
     private void rotate(TetrisShape shape, short angle) throws Exception {
         isOpRunning = true;
         Group node = shape.getNode();
-        Bounds bounds = node.localToScene(node.getBoundsInLocal());
 
         Transform currentTransform = node.getTransforms().isEmpty() ? null : node.getTransforms().get(0);
         Transform copyTransform = currentTransform;
@@ -79,7 +79,7 @@ public class TetrisController {
         node.getTransforms().clear();
         node.getTransforms().add(currentTransform);
 
-        bounds = node.localToScene(node.getBoundsInLocal());
+        Bounds bounds = node.localToScene(node.getBoundsInLocal());
 
         if (!isRotatePossible(shape, angle)) {
             node.getTransforms().clear();
@@ -187,12 +187,14 @@ public class TetrisController {
             }
             translateBlocksAboveLine(topRowIndex, index - 1);
             topRowIndex++;
+            mergeLine();
             return ;
         }
+        isMergeLineRunning = false;
     }
 
     private void translateBlocksAboveLine(int topIndex, int bottomIndex) {
-        if (topIndex > bottomIndex || bottomIndex == ProjectConstants.NUM_VERTICAL_BLOCK - 1) {
+        if (topIndex > bottomIndex) {
             return;
         }
         ShapeService shapeService = ShapeService.getInstance();
