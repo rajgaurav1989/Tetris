@@ -180,15 +180,15 @@ public class TetrisController {
                 continue;
             }
             freeRow(index);
-            try {
+        /*    try {
                 Thread.sleep(ProjectConstants.LINE_SLEEP_TIME);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            } */
             translateBlocksAboveLine(topRowIndex, index - 1);
             topRowIndex++;
             mergeLine();
-            return ;
+            return;
         }
         isMergeLineRunning = false;
     }

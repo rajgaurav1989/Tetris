@@ -56,7 +56,10 @@ public class App extends Application {
             public void handle(long now) {
                 if (now - lastUpdateTime >= ProjectConstants.FRAME_RENDER_TIME) {
                     lastUpdateTime = now;
-                    if (isTouched && !TetrisController.isMergeLineRunning) {
+                    if (TetrisController.isMergeLineRunning){
+                        return;
+                    }
+                    if (isTouched) {
                         isTouched = false;
                         if (previousShape != null) {
                             tetrisShape = ShapeService.getInstance().getShape();

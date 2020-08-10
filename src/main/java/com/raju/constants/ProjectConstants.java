@@ -22,13 +22,6 @@ public class ProjectConstants {
     public static final int VERTICAL_FALL = CELL_SIZE;
     public static final int DEFAULT_FALL = CELL_SIZE;
 
-    public static final float MIN_LEFT_X_COORD = CELL_SIZE;
-    public static final float MAX_RIGHT_X_COORD = WINDOW_WIDTH + MIN_LEFT_X_COORD;
-    public static final float MIN_TOP_Y_COORD = CELL_SIZE;
-    public static final float MAX_BOTTOM_Y_COORD = WINDOW_HEIGHT + MIN_TOP_Y_COORD;
-
-    public static final int LINE_SLEEP_TIME = 1000;
-
     public static final int HASH = 5;
     public static final int HASH_MULTIPLIER = 89;
 
