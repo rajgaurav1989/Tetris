@@ -57,9 +57,9 @@ public class TetrisController {
                 case DOWN:
                     translateFall(shape, ProjectConstants.VERTICAL_FALL);
                     break;
-                case UP:
-                    translateFall(shape, -ProjectConstants.VERTICAL_FALL);
-                    break;
+//                case UP:
+//                    translateFall(shape, -ProjectConstants.VERTICAL_FALL);
+//                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
